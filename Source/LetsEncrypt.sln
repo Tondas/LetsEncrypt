@@ -14,11 +14,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_Solution
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.Core", "LetsEncrypt.Core\LetsEncrypt.Core.csproj", "{8356492B-89F1-4C3B-ABE9-41F0FE3C7F86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LetsEncrypt.Core", "LetsEncrypt.Core\LetsEncrypt.Core.csproj", "{8356492B-89F1-4C3B-ABE9-41F0FE3C7F86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.ConsoleApp", "LetsEncrypt.ConsoleApp\LetsEncrypt.ConsoleApp.csproj", "{E4A94890-7AF0-4C1A-8040-E4925CC66CAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LetsEncrypt.ConsoleApp", "LetsEncrypt.ConsoleApp\LetsEncrypt.ConsoleApp.csproj", "{E4A94890-7AF0-4C1A-8040-E4925CC66CAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.Test", "LetsEncrypt.Test\LetsEncrypt.Test.csproj", "{63E252A0-5C4C-4F71-AA92-FEFA2825294A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LetsEncrypt.Test", "LetsEncrypt.Test\LetsEncrypt.Test.csproj", "{63E252A0-5C4C-4F71-AA92-FEFA2825294A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
