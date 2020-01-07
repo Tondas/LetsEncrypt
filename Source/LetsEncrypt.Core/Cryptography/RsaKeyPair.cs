@@ -5,7 +5,7 @@ namespace LetsEncrypt.Core.Cryptography
 {
     public class RsaKeyPair
     {
-        #region Const + Fields + Properties
+        #region Consts + Fields + Properties
 
         public const string KEY_TYPE = "RSA";
         public const string THUMBPRINT_ALGORITHM_NAME = "SHA256";
@@ -19,7 +19,7 @@ namespace LetsEncrypt.Core.Cryptography
 
         public RsaJsonWebKey Jwk => ComposeJwk();
 
-        #endregion Const + Fields + Properties
+        #endregion Consts + Fields + Properties
 
         // Ctor
 
@@ -64,21 +64,5 @@ namespace LetsEncrypt.Core.Cryptography
                 Modulus = JwsConvert.ToBase64String(Public.Modulus)
             };
         }
-
-        //public byte[] ToDer()
-        //        //{
-        //        //    var privateKey = PrivateKeyInfoFactory.CreatePrivateKeyInfo(KeyPair.Private);
-        //        //    return privateKey.GetDerEncoded();
-        //        //}
-
-        //        //public string ToPem()
-        //        //{
-        //        //    using (var sr = new StringWriter())
-        //        //    {
-        //        //        var pemWriter = new PemWriter(sr);
-        //        //        pemWriter.WriteObject(KeyPair);
-        //        //        return sr.ToString();
-        //        //    }
-        //        //}
     }
 }

@@ -1,6 +1,7 @@
 using LetsEncrypt.Core;
 using LetsEncrypt.Core.Entities;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,41 +13,52 @@ namespace LetsEncrypt.Test
         [Test]
         public async Task Test()
         {
+            // Create client alias core object
             var acmeClient = new AcmeClient();
 
             // Specify which environment you want to use
-            await acmeClient.InitAsync(Environment.LetsEncryptV2Staging);
+            await acmeClient.InitAsync(ApiEnvironment.LetsEncryptV2);
 
             // Generate new RSA key pair or use existing
             acmeClient.GenerateKeyPair();
 
+            // Create new Account
             var account = await acmeClient.NewAccountAsync("au@turingion.com");
-            var freshAccount = await acmeClient.GetAccountAsync(account.Location);
 
-            //account.TermsOfServiceAgreed = false;
-            //var account3 = await acmeClient.UpdateAccountAsync(account);
-            //var account4 = await acmeClient.DeactivateAccountAsync(account);
+            // Create new Order
+            var order = await acmeClient.NewOrderAsync(account, new List<string> { "suppo.biz", "*.suppo.biz" });
 
-            var order = await acmeClient.NewOrderAsync(account, new List<string> { "turingion.com" });
-            //var order = await acmeClient.NewOrderAsync(account, new List<string> { "turingion.com", "*.turingion.com" });
-            //var freshOrder = await acmeClient.GetOrderAsync(account, order.Location);
-
+            // Create DNS challenge (DNS is required for wildcard certificate)
             var challanges = await acmeClient.GetDnsChallenges(account, order);
 
+            // Creation of all DNS entries
             foreach (var challange in challanges)
             {
                 var dnsKey = challange.VerificationKey;
                 var dnsText = challange.VerificationValue;
 
-                // Create DNS entry
-                // _acme-challenge.turingion.com
-
-                await acmeClient.ValidateChallengeAsync(account, challange);
-
-                var freshChallange = await acmeClient.GetChallengeAsync(account, challange);
+                // Create DNS TXT record
+                // key: _acme-challenge.turingion.com, value: dnsText
             }
 
-            // TODO: generate certificate
+            // Validation of all DNS entries
+            foreach (var challange in challanges)
+            {
+                await acmeClient.ValidateChallengeAsync(account, challange);
+
+                // Verify status of challenge
+                var freshChallange = await acmeClient.GetChallengeAsync(account, challange);
+                if (freshChallange.Status == ChallengeStatus.Invalid)
+                {
+                    throw new Exception("Something is wrong with your DNS TXT record(s)!");
+                }
+            }
+
+            // Generate certificate
+            var pfx = await acmeClient.GenerateCertificateAsync(account, order, "SuperSecretPassword:D", "Suppo.biz");
+
+            // Save file locally
+            await LocalFileHandler.WriteAsync("Suppo.biz.pfx", pfx);
 
             Assert.Pass();
         }

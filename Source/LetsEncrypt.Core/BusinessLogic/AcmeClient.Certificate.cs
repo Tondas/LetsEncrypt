@@ -1,5 +1,8 @@
-﻿using LetsEncrypt.Core.Entities;
+﻿using LetsEncrypt.Core.Cryptography.Certificate;
+using LetsEncrypt.Core.Entities;
 using LetsEncrypt.Core.Jws;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LetsEncrypt.Core
@@ -8,38 +11,38 @@ namespace LetsEncrypt.Core
     {
         // Public Methods
 
-        //public async Task<byte[]> GeenrateCertificateAsync(Account account, Order order)
-        //{
-        //    order = await GetOrderAsync(account, order.Location);
+        public async Task<byte[]> GenerateCertificateAsync(Account account, Order order, string certificatePassword, string certificateCommonName)
+        {
+            // Load fresh order
+            order = await GetOrderAsync(account, order.Location);
 
-        //    // Verify Status
-        //    if (order.Status != OrderStatus.Ready &&
-        //        order.Status != OrderStatus.Pending)
-        //    {
-        //        throw new Exception("Order status must be Ready or Pending!");
-        //    }
+            // Verify Status
+            if (order.Status != OrderStatus.Ready &&
+                order.Status != OrderStatus.Pending)
+            {
+                throw new Exception("Order status must be 'Ready' or 'Pending'!");
+            }
 
-        //    var cerBuilder = new CertificateBuilder("password", "Turingion.com");
+            // Initialize builder
+            var cerBuilder = new CertificateBuilder(certificatePassword, certificateCommonName, order.Identifiers.Select(i => i.Value).ToList());
 
-        //    // Generate certificate request
-        //    byte[] request = cerBuilder.CreateSigningRequest();
+            // Generate certificate request
+            byte[] request = cerBuilder.CreateSigningRequest();
 
-        //    // Send certificate to CA
-        //    order = await Finalize(account, order, request);
+            // Send certificate to CA
+            order = await Finalize(account, order, request);
 
-        //    if (order.Status != OrderStatus.Valid)
-        //    {
-        //        throw new Exception("Fail during finalization of your order!");
-        //    }
+            if (order.Status != OrderStatus.Valid)
+            {
+                throw new Exception("Fail during finalization of your order!");
+            }
 
-        //    // Download signed certificate
-        //    var certificatePem = await Download(account, order);
+            // Download signed certificate
+            var certificatePem = await Download(account, order);
 
-        //    // Finish certificate
-        //    var finalCertificate = cerBuilder.FinishCertificate(certificatePem);
-
-        //    return finalCertificate;
-        //}
+            // Finalize certificate
+            return cerBuilder.FinalizeCertificate(certificatePem);
+        }
 
         // Private Methods
 

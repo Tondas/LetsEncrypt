@@ -7,7 +7,7 @@ Solution consist of 2 projects:
 #### LetsEncrypt.Core
 
 LetsEncrypt.Core is simple and straightforward C# implementation of [ACME](https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment) client for [Let's Encrypt](https://letsencrypt.org/) certificates. Library is based on **.NET Standard 2.1+**.
-It uses Let's Encrypt **v2 API** and this library is primary used for generation of **wildcard** certificates. 
+It uses Let's Encrypt **v2 API** and this library is primary used for generation of **wildcard** certificates as .pfx. 
 
 #### LetsEncrypt.ConsoleApp
 

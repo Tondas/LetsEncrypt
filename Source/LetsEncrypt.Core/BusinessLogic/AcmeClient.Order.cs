@@ -16,15 +16,13 @@ namespace LetsEncrypt.Core
             return await PostAsync<Order>(orderLocation, signedData);
         }
 
-        public async Task<Order> NewOrderAsync(Account account, List<string> identifiers, DateTime? notBefore = null, DateTime? notAfter = null)
+        public async Task<Order> NewOrderAsync(Account account, List<string> identifiers)
         {
             var data = new Order
             {
                 Identifiers = identifiers
                     .Select(id => new Identifier { Type = IdentifierType.Dns, Value = id })
-                    .ToArray(),
-                NotBefore = notBefore,
-                NotAfter = notAfter,
+                    .ToArray()
             };
 
             var signedData = _jws.Sign(data, account.Location, Directory.NewOrder, Nonce);

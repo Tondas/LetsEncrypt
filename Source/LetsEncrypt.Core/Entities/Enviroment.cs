@@ -2,7 +2,7 @@
 
 namespace LetsEncrypt.Core.Entities
 {
-    public class Environment
+    public class ApiEnvironment
     {
         //// V1
 

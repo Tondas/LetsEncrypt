@@ -1,5 +1,6 @@
 ﻿using LetsEncrypt.Core.Entities;
 using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
@@ -7,24 +8,30 @@ namespace LetsEncrypt.Core.Cryptography.Certificate
 {
     public class CertificateBuilder
     {
+        #region Consts + Fields
+
+        private const int KEY_SIZE = 2048;
         private readonly string _password;
         private readonly string _cn;
+        private readonly List<string> _subjectAlternativeNames;
         private readonly RSA _rsaKey;
+
+        #endregion Consts + Fields
 
         // Ctor
 
-        public CertificateBuilder(string password, string cn)
+        public CertificateBuilder(string password, string cn, List<string> subjectAlternativeNames)
         {
             _password = password;
             _cn = cn;
-            _rsaKey = RSA.Create(2048);
+            _subjectAlternativeNames = subjectAlternativeNames;
+            _rsaKey = RSA.Create(KEY_SIZE);
         }
 
         // Public Methods
 
         public byte[] CreateSigningRequest()
         {
-            // C=SR,ST=Trenciansky kraj,L=Slovakia,O=Turingion,OU=Software Development Company,CN=Turingion.com
             CertificateRequest req = new CertificateRequest($"CN={_cn}",
                    _rsaKey,
                    HashAlgorithmName.SHA256,
@@ -37,13 +44,16 @@ namespace LetsEncrypt.Core.Cryptography.Certificate
 
             // SAN
             var sanb = new SubjectAlternativeNameBuilder();
-            sanb.AddDnsName("turingion.com");
+            foreach (var subjectAlternativeName in _subjectAlternativeNames)
+            {
+                sanb.AddDnsName(subjectAlternativeName);
+            }
             req.CertificateExtensions.Add(sanb.Build());
 
             return req.CreateSigningRequest();
         }
 
-        public byte[] FinishCertificate(CertificateChain certificateChain)
+        public byte[] FinalizeCertificate(CertificateChain certificateChain)
         {
             var certificate = new X509Certificate2(GetBytesFromPem(certificateChain.Certificate));
             var issuer = new X509Certificate2(GetBytesFromPem(certificateChain.Issuer));
