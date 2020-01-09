@@ -17,7 +17,9 @@ namespace LetsEncrypt.Core
         public async Task<Account> GetAccountAsync(Uri accountLocation)
         {
             var signedData = _jws.Sign(null, accountLocation, accountLocation, Nonce);
-            return await PostAsync<Account>(accountLocation, signedData);
+            var account = await PostAsync<Account>(accountLocation, signedData);
+            account.Location = accountLocation;
+            return account;
         }
 
         public async Task<Account> DeactivateAccountAsync(Account account)

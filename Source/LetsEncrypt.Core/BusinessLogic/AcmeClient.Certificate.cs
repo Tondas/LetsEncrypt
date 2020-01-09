@@ -1,5 +1,4 @@
-﻿using LetsEncrypt.Core.Cryptography.Certificate;
-using LetsEncrypt.Core.Entities;
+﻿using LetsEncrypt.Core.Entities;
 using LetsEncrypt.Core.Jws;
 using System;
 using System.Linq;
@@ -11,7 +10,7 @@ namespace LetsEncrypt.Core
     {
         // Public Methods
 
-        public async Task<byte[]> GenerateCertificateAsync(Account account, Order order, string certificatePassword, string certificateCommonName)
+        public async Task<Certificate> GenerateCertificateAsync(Account account, Order order, string certificateCommonName, string password)
         {
             // Load fresh order
             order = await GetOrderAsync(account, order.Location);
@@ -24,10 +23,10 @@ namespace LetsEncrypt.Core
             }
 
             // Initialize builder
-            var cerBuilder = new CertificateBuilder(certificatePassword, certificateCommonName, order.Identifiers.Select(i => i.Value).ToList());
+            var cert = new Certificate(certificateCommonName, order.Identifiers.Select(i => i.Value).ToList(), password);
 
             // Generate certificate request
-            byte[] request = cerBuilder.CreateSigningRequest();
+            byte[] request = cert.CreateSigningRequest();
 
             // Send certificate to CA
             order = await Finalize(account, order, request);
@@ -38,10 +37,11 @@ namespace LetsEncrypt.Core
             }
 
             // Download signed certificate
-            var certificatePem = await Download(account, order);
+            var certificateChainPem = await Download(account, order);
 
-            // Finalize certificate
-            return cerBuilder.FinalizeCertificate(certificatePem);
+            cert.AddChain(certificateChainPem);
+
+            return cert;
         }
 
         // Private Methods

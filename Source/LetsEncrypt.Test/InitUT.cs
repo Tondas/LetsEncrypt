@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LetsEncrypt.Test
 {
-    public class InitUT : Startup
+    public class InitUT : BaseUT
 
     {
         [Test]
@@ -17,13 +17,13 @@ namespace LetsEncrypt.Test
             var acmeClient = new AcmeClient();
 
             // Specify which environment you want to use
-            await acmeClient.InitAsync(ApiEnvironment.LetsEncryptV2);
+            await acmeClient.InitAsync(EnviromentUri);
 
             // Generate new RSA key pair or use existing
             acmeClient.GenerateKeyPair();
 
             // Create new Account
-            var account = await acmeClient.NewAccountAsync("au@turingion.com");
+            var account = await acmeClient.NewAccountAsync(ContactEmail);
 
             // Create new Order
             var order = await acmeClient.NewOrderAsync(account, new List<string> { "suppo.biz", "*.suppo.biz" });
@@ -55,10 +55,11 @@ namespace LetsEncrypt.Test
             }
 
             // Generate certificate
-            var pfx = await acmeClient.GenerateCertificateAsync(account, order, "SuperSecretPassword:D", "Suppo.biz");
+            var certificate = await acmeClient.GenerateCertificateAsync(account, order, "Suppo.biz", "SuperSecretPassword:D");
 
-            // Save file locally
-            await LocalFileHandler.WriteAsync("Suppo.biz.pfx", pfx);
+            // Save files locally
+            await LocalFileHandler.WriteAsync("Suppo.biz.pfx", certificate.GeneratePfx());
+            await LocalFileHandler.WriteAsync("Suppo.biz.crt", certificate.GenerateCrt());
 
             Assert.Pass();
         }
