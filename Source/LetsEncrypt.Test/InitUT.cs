@@ -60,6 +60,8 @@ namespace LetsEncrypt.Test
             // Save files locally
             await LocalFileHandler.WriteAsync("Suppo.biz.pfx", certificate.GeneratePfx());
             await LocalFileHandler.WriteAsync("Suppo.biz.crt", certificate.GenerateCrt());
+            await LocalFileHandler.WriteAsync("Suppo.biz.crt.pem", certificate.GenerateCrtPem());
+            await LocalFileHandler.WriteAsync("Suppo.biz.key.pem", certificate.GenerateKeyPem());
 
             Assert.Pass();
         }

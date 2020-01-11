@@ -39,8 +39,9 @@ namespace LetsEncrypt.Core.Cryptography
             certificate = certificate.CopyWithPrivateKey(rsa);
 
             var collection = new X509Certificate2Collection();
-            collection.Add(certificate);
             collection.Add(issuer);
+            collection.Add(certificate);
+
             return collection.Export(certificateType, password);
         }
     }

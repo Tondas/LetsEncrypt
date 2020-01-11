@@ -48,12 +48,12 @@ namespace LetsEncrypt.Core.Entities
 
         public byte[] GeneratePfx()
         {
-            return CertificateBuilder.Generate(Rsa, _certificateChain, _password.ToString(), X509ContentType.Pfx);
+            return CertificateBuilder.Generate(Rsa, _certificateChain, _password.ToString2(), X509ContentType.Pfx);
         }
 
         public byte[] GenerateCrt()
         {
-            return CertificateBuilder.Generate(Rsa, _certificateChain, _password.ToString(), X509ContentType.Cert);
+            return CertificateBuilder.Generate(Rsa, _certificateChain, _password.ToString2(), X509ContentType.Cert);
         }
 
         public string GenerateCrtPem()
