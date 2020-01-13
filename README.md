@@ -91,9 +91,6 @@ DNS TXT must contains 2 records:
 
 **Yes, `*.domain.com` has the same key as `domain.com` !!!**
 
----
-
-
 ### Validation
 
 All challenges must be validated:
