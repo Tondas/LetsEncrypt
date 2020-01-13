@@ -124,10 +124,10 @@ var pfx = certificate.GeneratePfx();
 var crt = certificate.GenerateCrt();
 
 // Generate string of certificate in PEM format 
-string crtPem = certificate.GenerateCrtPem();
+var crtPem = certificate.GenerateCrtPem();
 
 // Generate string of certificate priate key in PEM format 
-string keyPem = certificate.GenerateKeyPem();
+var keyPem = certificate.GenerateKeyPem();
 ```
 
 **Enjoy! Any feedback is highly appreciated!**
