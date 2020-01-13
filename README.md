@@ -16,7 +16,7 @@ LetsEncrypt.ConsoleApp is C# implementation|usage of previous LetsEncrypt.Core l
 
 ## LetsEncrypt.Core
 
-#### Usage
+### Usage
 
 Add [LetsEncrypt.Core](https://TODO) as nuget package (or manual **.dll reference**) to your project.
 
@@ -30,21 +30,21 @@ acmeClient.GenerateKeyPair();
 
 ... and let's start:
 
-#### Account
+### Account
 
 Create new account: 
 ```cs
 var account = await acmeClient.NewAccountAsync("your@email.com");
 ```
 
-#### Order
+### Order
 
 When you want to generate wildcard certificate, I recomend to specify these 2 identifiers: `your.domain.com` and  `*.your.domain.com` as follows:
 ```cs
 var order = await acmeClient.NewOrderAsync(account, new List<string> { "your.domain.com", "*.your.domain.com" });
 ```
 
-#### Authorization
+### Authorization
 
 Wildcard certificates must by authorized by **DNS challange** only. So go one by one and create DNS TXT record. 
 ```cs
@@ -94,7 +94,7 @@ DNS TXT must contains 2 records:
 ---
 
 
-#### Validation
+### Validation
 
 All chalanges must be validated:
 
@@ -113,7 +113,7 @@ foreach (var challange in challanges)
 }
 ```
 
-#### Certificate
+### Certificate
 
 Finally, generate certificate:
 
@@ -123,7 +123,7 @@ var certificate = await acmeClient.GenerateCertificateAsync(account, order, "you
 // Generate byte[] of certificate in pfx format
 var pfx = certificate.GeneratePfx();
 // Generate byte[] of certificate in crt format
-var crt = certificate.GeneratePfx();
+var crt = certificate.GenerateCrt();
 // Generate string of certificate in PEM format 
 string crtPem = certificate.GenerateCrtPem();
 // Generate string of certificate priate key in PEM format 
