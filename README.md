@@ -46,13 +46,13 @@ var order = await acmeClient.NewOrderAsync(account, new List<string> { "your.dom
 
 ### Authorization
 
-Wildcard certificates must by authorized by **DNS challange** only. So go one by one and create DNS TXT record. 
+Wildcard certificates must by authorized by **DNS challenge** only. So go one by one and create DNS TXT record. 
 ```cs
-var challanges = await acmeClient.GetDnsChallenges(account, order);
+var challenges = await acmeClient.GetDnsChallenges(account, order);
 
-foreach (var challange in challanges)
+foreach (var challenge in challenges)
 {  
-    var dnsText = challange.VerificationValue;
+    var dnsText = challenge.VerificationValue;
     // value can be e.g.: eBAdFvukOz4Qq8nIVFPmNrMKPNlO8D1cr9bl8VFFsJM
 
     // Create DNS TXT record e.g.:
@@ -67,7 +67,7 @@ You want to generate simple certificate for:
 * `domain.com`
   
 DNS TXT must contains 1 record:
-* key: **_acme-challenge.domain.com**, value : dnsText of challange for `domain.com`
+* key: **_acme-challenge.domain.com**, value : dnsText of challenge for `domain.com`
 
 ##### Example no.2: 
 
@@ -76,8 +76,8 @@ You want to generate simple certificate with these subject names:
 * `blog.domain.com` 
   
 DNS TXT must contains 2 records :
-* key: **_acme-challenge.domain.com**, value : dnsText of challange for `domain.com`
-* key: **_acme-challenge.blog.domain.com**, value : dnsText of challange for `blog.domain.com` 
+* key: **_acme-challenge.domain.com**, value : dnsText of challenge for `domain.com`
+* key: **_acme-challenge.blog.domain.com**, value : dnsText of challenge for `blog.domain.com` 
 
 ##### Example no.3: 
 
@@ -86,8 +86,8 @@ You want to generate wildcard certificate with these subject names:
 * `*.domain.com` 
   
 DNS TXT must contains 2 records:
-* key: **_acme-challenge.domain.com**, value : dnsText of challange for `domain.com`
-* key: **_acme-challenge.domain.com**, value : dnsText of challange for `*.domain.com`
+* key: **_acme-challenge.domain.com**, value : dnsText of challenge for `domain.com`
+* key: **_acme-challenge.domain.com**, value : dnsText of challenge for `*.domain.com`
 
 **Yes, `*.domain.com` has the same key as `domain.com` !!!**
 
@@ -96,17 +96,17 @@ DNS TXT must contains 2 records:
 
 ### Validation
 
-All chalanges must be validated:
+All challenges must be validated:
 
 ```cs
-foreach (var challange in challanges)
+foreach (var challenge in challenges)
 {
     // Do a validation
-    await acmeClient.ValidateChallengeAsync(account, challange);
+    await acmeClient.ValidateChallengeAsync(account, challenge);
 
     // Verify status 
-    var freshChallange = await acmeClient.GetChallengeAsync(account, challange);
-    if (freshChallange.Status == ChallengeStatus.Invalid)
+    var freshChallenge = await acmeClient.GetChallengeAsync(account, challenge);
+    if (freshChallenge.Status == ChallengeStatus.Invalid)
     {
         throw new Exception("Something is wrong with your DNS TXT record(s)!");
     }
@@ -122,10 +122,13 @@ var certificate = await acmeClient.GenerateCertificateAsync(account, order, "you
 
 // Generate byte[] of certificate in pfx format
 var pfx = certificate.GeneratePfx();
+
 // Generate byte[] of certificate in crt format
 var crt = certificate.GenerateCrt();
+
 // Generate string of certificate in PEM format 
 string crtPem = certificate.GenerateCrtPem();
+
 // Generate string of certificate priate key in PEM format 
 string keyPem = certificate.GenerateKeyPem();
 ```

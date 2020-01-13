@@ -29,26 +29,28 @@ namespace LetsEncrypt.Test
             var order = await acmeClient.NewOrderAsync(account, new List<string> { "suppo.biz", "*.suppo.biz" });
 
             // Create DNS challenge (DNS is required for wildcard certificate)
-            var challanges = await acmeClient.GetDnsChallenges(account, order);
+            var challenges = await acmeClient.GetDnsChallenges(account, order);
 
             // Creation of all DNS entries
-            foreach (var challange in challanges)
+            foreach (var challenge in challenges)
             {
-                var dnsKey = challange.VerificationKey;
-                var dnsText = challange.VerificationValue;
+                var dnsKey = challenge.VerificationKey;
+                var dnsText = challenge.VerificationValue;
+                // value can be e.g.: eBAdFvukOz4Qq8nIVFPmNrMKPNlO8D1cr9bl8VFFsJM
 
-                // Create DNS TXT record
-                // key: _acme-challenge.turingion.com, value: dnsText
+                // Create DNS TXT record e.g.:
+                // key: _acme-challenge.your.domain.com
+                // value: eBAdFvukOz4Qq8nIVFPmNrMKPNlO8D1cr9bl8VFFsJM
             }
 
             // Validation of all DNS entries
-            foreach (var challange in challanges)
+            foreach (var challenge in challenges)
             {
-                await acmeClient.ValidateChallengeAsync(account, challange);
+                await acmeClient.ValidateChallengeAsync(account, challenge);
 
                 // Verify status of challenge
-                var freshChallange = await acmeClient.GetChallengeAsync(account, challange);
-                if (freshChallange.Status == ChallengeStatus.Invalid)
+                var freshChallenge = await acmeClient.GetChallengeAsync(account, challenge);
+                if (freshChallenge.Status == ChallengeStatus.Invalid)
                 {
                     throw new Exception("Something is wrong with your DNS TXT record(s)!");
                 }
