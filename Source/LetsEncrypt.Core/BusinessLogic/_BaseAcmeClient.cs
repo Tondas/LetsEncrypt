@@ -18,8 +18,34 @@ namespace LetsEncrypt.Core
         private readonly static Lazy<HttpClient> _httpClient = new Lazy<HttpClient>(() => new HttpClient());
         private HttpClient Http { get => _httpClient.Value; }
 
-        protected Directory Directory { get; set; }
-        protected string Nonce { get; set; }
+        private Directory _directory { get; set; }
+        private string _nonce { get; set; }
+
+        protected Directory Directory
+        {
+            get
+            {
+                if (_directory == null)
+                {
+                    throw new Exception("Client is not initialized correctly, please call method .InitAsync() first!");
+                }
+                return _directory;
+            }
+            set { _directory = value; }
+        }
+
+        protected string Nonce
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_nonce))
+                {
+                    throw new Exception("Client is not initialized correctly, please call method .InitAsync() first!");
+                }
+                return _nonce;
+            }
+            set { _nonce = value; }
+        }
 
         // Ctor
 
@@ -31,14 +57,14 @@ namespace LetsEncrypt.Core
 
         public async Task InitAsync(Uri directoryUri)
         {
-            if (Directory == null)
+            if (_directory == null)
             {
-                Directory = await GetAsync<Directory>(directoryUri);
+                _directory = await GetAsync<Directory>(directoryUri);
             }
 
-            if (Nonce == null)
+            if (_nonce == null)
             {
-                Nonce = await GetNonceAsync();
+                _nonce = await GetNonceAsync();
             }
         }
 

@@ -7,7 +7,7 @@ namespace LetsEncrypt.Core.Entities
     public class BaseEntity
     {
         [JsonIgnore]
-        public string UnknownContent { get; set; }
+        public virtual string UnknownContent { get; set; }
 
         [JsonIgnore]
         public virtual Uri Location { get; set; }

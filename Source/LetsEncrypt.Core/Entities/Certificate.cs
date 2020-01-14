@@ -1,9 +1,6 @@
 ﻿using LetsEncrypt.Core.Cryptography;
-using LetsEncrypt.Core.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Security;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
 namespace LetsEncrypt.Core.Entities
@@ -12,33 +9,32 @@ namespace LetsEncrypt.Core.Entities
     {
         #region Consts + Fields + Properties
 
-        private const int KEY_SIZE = 2048;
-        private readonly string _cn;
-        private readonly SecureString _password;
-        private readonly List<string> _subjectAlternativeNames;
         private CertificateChain _certificateChain;
 
-        public RSA Rsa { get; private set; }
+        public RsaKeyPair Key { get; private set; }
 
         #endregion Consts + Fields + Properties
 
         // Ctor
 
-        public Certificate(string cn, List<string> subjectAlternativeNames, string password)
+        public Certificate(RsaKeyPair key = null)
         {
-            _cn = cn;
-            _subjectAlternativeNames = subjectAlternativeNames;
-            _password = password.ToSecureString();
-
             // Generate new RSA key for certificate
-            Rsa = RSA.Create(KEY_SIZE);
+            if (key == null)
+            {
+                Key = RsaKeyPair.New();
+            }
+            else
+            {
+                Key = key;
+            }
         }
 
         // Public Methods
 
-        public byte[] CreateSigningRequest()
+        public byte[] CreateSigningRequest(string cn, List<string> subjectAlternativeNames)
         {
-            return CertificateBuilder.CreateSigningRequest(Rsa, _cn, _subjectAlternativeNames);
+            return CertificateBuilder.CreateSigningRequest(Key.ToRSA(), cn, subjectAlternativeNames);
         }
 
         public void AddChain(CertificateChain certificateChain)
@@ -46,28 +42,43 @@ namespace LetsEncrypt.Core.Entities
             _certificateChain = certificateChain;
         }
 
-        public byte[] GeneratePfx()
+        public byte[] GetOriginalCertificate()
         {
-            return CertificateBuilder.Generate(Rsa, _certificateChain, _password.ToString2(), X509ContentType.Pfx);
+            return _certificateChain.CertificateBytes;
         }
 
-        public byte[] GenerateCrt()
+        public byte[] GeneratePfx(string password)
         {
-            return CertificateBuilder.Generate(Rsa, _certificateChain, _password.ToString2(), X509ContentType.Cert);
+            return CertificateBuilder.Generate(Key.ToRSA(), _certificateChain, password, X509ContentType.Pfx);
         }
 
-        public string GenerateCrtPem()
+        public byte[] GenerateCrt(string password)
+        {
+            return CertificateBuilder.Generate(Key.ToRSA(), _certificateChain, password, X509ContentType.Cert);
+        }
+
+        public string GenerateCrtPem(string password)
         {
             return string.Format(
                 "-----BEGIN CERTIFICATE-----\n{0}\n-----END CERTIFICATE-----",
-                Convert.ToBase64String(GenerateCrt()));
+                Convert.ToBase64String(GenerateCrt(password)));
         }
 
         public string GenerateKeyPem()
         {
-            return string.Format(
-                "-----BEGIN RSA PRIVATE KEY-----\n{0}\n-----END RSA PRIVATE KEY-----",
-                Convert.ToBase64String(Rsa.ExportRSAPrivateKey()));
+            return Key.ToPrivateKeyPem();
+        }
+
+        public string Serialize()
+        {
+            return _certificateChain.Content;
+        }
+
+        public static Certificate Deserialize(string data, RsaKeyPair key)
+        {
+            var result = new Certificate(key);
+            result.AddChain(new CertificateChain(data));
+            return result;
         }
     }
 }

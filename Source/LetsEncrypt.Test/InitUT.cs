@@ -26,7 +26,7 @@ namespace LetsEncrypt.Test
             var account = await acmeClient.NewAccountAsync(ContactEmail);
 
             // Create new Order
-            var order = await acmeClient.NewOrderAsync(account, new List<string> { "suppo.biz", "*.suppo.biz" });
+            var order = await acmeClient.NewOrderAsync(account, new List<string> { "suppo.biz" });
 
             // Create DNS challenge (DNS is required for wildcard certificate)
             var challenges = await acmeClient.GetDnsChallenges(account, order);
@@ -57,13 +57,16 @@ namespace LetsEncrypt.Test
             }
 
             // Generate certificate
-            var certificate = await acmeClient.GenerateCertificateAsync(account, order, "Suppo.biz", "SuperSecretPassword:D");
+            var certificate = await acmeClient.GenerateCertificateAsync(account, order, "Suppo.biz");
 
             // Save files locally
-            await LocalFileHandler.WriteAsync("Suppo.biz.pfx", certificate.GeneratePfx());
-            await LocalFileHandler.WriteAsync("Suppo.biz.crt", certificate.GenerateCrt());
-            await LocalFileHandler.WriteAsync("Suppo.biz.crt.pem", certificate.GenerateCrtPem());
+            var password = "SuperSecretPassword:D";
+            await LocalFileHandler.WriteAsync("Suppo.biz.pfx", certificate.GeneratePfx(password));
+            await LocalFileHandler.WriteAsync("Suppo.biz.crt", certificate.GenerateCrt(password));
+            await LocalFileHandler.WriteAsync("Suppo.biz.crt.pem", certificate.GenerateCrtPem(password));
             await LocalFileHandler.WriteAsync("Suppo.biz.key.pem", certificate.GenerateKeyPem());
+
+            await acmeClient.RevokeCertificateAsync(certificate);
 
             Assert.Pass();
         }

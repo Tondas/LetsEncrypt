@@ -2,7 +2,6 @@
 using LetsEncrypt.Core.Json;
 using LetsEncrypt.Core.Jws;
 using Newtonsoft.Json;
-using System.Security.Cryptography;
 
 namespace LetsEncrypt.Core
 {
@@ -12,8 +11,7 @@ namespace LetsEncrypt.Core
 
         private readonly JsonSerializerSettings _jsonSettings = JsonSettings.CreateSettings();
         private JwsSigner _jws;
-        private RsaKeyPair RsaKeyPair { get; set; }
-        public bool HasKeyPair => RsaKeyPair != null;
+        private RsaKeyPair Key { get; set; }
 
         #endregion Fields + Properties
 
@@ -28,25 +26,15 @@ namespace LetsEncrypt.Core
 
         public RsaKeyPair GenerateKeyPair()
         {
-            RsaKeyPair = RsaCryptoProvider.GenerateKeys();
-            InitJwsSigner(RsaKeyPair);
-            return RsaKeyPair;
+            Key = RsaKeyPair.New();
+            InitJwsSigner(Key);
+            return Key;
         }
 
-        public void UseKeyPair(RsaKeyPair rsaKeys)
+        public void UseKeyPair(RsaKeyPair key)
         {
-            RsaKeyPair = rsaKeys;
-            InitJwsSigner(RsaKeyPair);
-        }
-
-        public void UseKeyPair(RSAParameters privateKey, RSAParameters publicKey)
-        {
-            UseKeyPair(new RsaKeyPair(privateKey, publicKey));
-        }
-
-        public void UseKeyPair(string privateKey, string publicKey)
-        {
-            UseKeyPair(new RsaKeyPair(privateKey, publicKey));
+            Key = key;
+            InitJwsSigner(Key);
         }
 
         // Private Methods

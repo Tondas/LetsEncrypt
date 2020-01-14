@@ -10,7 +10,7 @@ namespace LetsEncrypt.Core
     {
         // Public Methods
 
-        public async Task<Certificate> GenerateCertificateAsync(Account account, Order order, string certificateCommonName, string password)
+        public async Task<Certificate> GenerateCertificateAsync(Account account, Order order, string certificateCommonName)
         {
             // Load fresh order
             order = await GetOrderAsync(account, order.Location);
@@ -23,13 +23,13 @@ namespace LetsEncrypt.Core
             }
 
             // Initialize builder
-            var cert = new Certificate(certificateCommonName, order.Identifiers.Select(i => i.Value).ToList(), password);
+            var cert = new Certificate();
 
             // Generate certificate request
-            byte[] request = cert.CreateSigningRequest();
+            byte[] request = cert.CreateSigningRequest(certificateCommonName, order.Identifiers.Select(i => i.Value).ToList());
 
             // Send certificate to CA
-            order = await Finalize(account, order, request);
+            order = await Finalize(account.Location, order, request);
 
             if (order.Status != OrderStatus.Valid)
             {
@@ -37,25 +37,37 @@ namespace LetsEncrypt.Core
             }
 
             // Download signed certificate
-            var certificateChainPem = await Download(account, order);
+            var certificateChainPem = await Download(account.Location, order);
 
             cert.AddChain(certificateChainPem);
 
             return cert;
         }
 
+        public async Task RevokeCertificateAsync(Certificate certificate, RevocationReason reason = RevocationReason.Unspecified)
+        {
+            var certificateRevocation = new CertificateRevocation
+            {
+                Certificate = JwsConvert.ToBase64String(certificate.GetOriginalCertificate()),
+                Reason = reason
+            };
+
+            var signedData = new JwsSigner(certificate.Key).Sign(certificateRevocation, url: Directory.RevokeCert, nonce: Nonce);
+            var result = await PostAsync<Empty>(Directory.RevokeCert, signedData);
+        }
+
         // Private Methods
 
-        private async Task<Order> Finalize(Account account, Order order, byte[] cert)
+        private async Task<Order> Finalize(Uri accountLocation, Order order, byte[] cert)
         {
             var orderCert = new OrderCertificate() { Csr = JwsConvert.ToBase64String(cert) };
-            var signedData = _jws.Sign(orderCert, account.Location, order.Finalize, Nonce);
+            var signedData = _jws.Sign(orderCert, accountLocation, order.Finalize, Nonce);
             return await PostAsync<Order>(order.Finalize, signedData);
         }
 
-        private async Task<CertificateChain> Download(Account account, Order order)
+        private async Task<CertificateChain> Download(Uri accountLocation, Order order)
         {
-            var signedData = _jws.Sign(null, account.Location, order.Certificate, Nonce);
+            var signedData = _jws.Sign(null, accountLocation, order.Certificate, Nonce);
             return await PostAsync<CertificateChain>(order.Certificate, signedData);
         }
     }

@@ -46,10 +46,10 @@ namespace LetsEncrypt.Core
 
         // Private Methods
 
-        private async Task<Authorization> GetAuthorizationAsync(Uri accountLocation, Uri authorizationLocation)
+        private async Task<Authorization> GetAuthorizationAsync(Uri accountLocation, Uri authorizationId)
         {
-            var signedData = _jws.Sign(null, accountLocation, authorizationLocation, Nonce);
-            return await PostAsync<Authorization>(authorizationLocation, signedData);
+            var signedData = _jws.Sign(null, accountLocation, authorizationId, Nonce);
+            return await PostAsync<Authorization>(authorizationId, signedData);
         }
 
         //
@@ -63,7 +63,7 @@ namespace LetsEncrypt.Core
 
         private string GetChalangeKey(string token)
         {
-            var jwkJson = JsonConvert.SerializeObject(RsaKeyPair.Jwk, Formatting.None, _jsonSettings);
+            var jwkJson = JsonConvert.SerializeObject(Key.Jwk, Formatting.None, _jsonSettings);
             var jwkBytes = Encoding.UTF8.GetBytes(jwkJson);
             var jwkThumbprint = Sha256HashProvider.ComputeHash(jwkBytes);
             var jwkThumbprintEncoded = JwsConvert.ToBase64String(jwkThumbprint);

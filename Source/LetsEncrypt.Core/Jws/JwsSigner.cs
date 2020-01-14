@@ -8,13 +8,13 @@ namespace LetsEncrypt.Core.Jws
 {
     public class JwsSigner
     {
-        private readonly RsaKeyPair _rsaKeyPair;
+        private readonly RsaKeyPair _key;
 
         // Ctor
 
-        public JwsSigner(RsaKeyPair rsaKeyPair)
+        public JwsSigner(RsaKeyPair key)
         {
-            _rsaKeyPair = rsaKeyPair;
+            _key = key;
         }
 
         // Public Methods
@@ -24,8 +24,8 @@ namespace LetsEncrypt.Core.Jws
             var header =
                 new
                 {
-                    alg = _rsaKeyPair.ALGORITHM_NAME,
-                    jwk = _rsaKeyPair.Jwk,
+                    alg = _key.ALGORITHM_NAME,
+                    jwk = _key.Jwk,
                     nonce,
                     url,
                 };
@@ -38,7 +38,7 @@ namespace LetsEncrypt.Core.Jws
             var header =
                 new
                 {
-                    alg = _rsaKeyPair.ALGORITHM_NAME,
+                    alg = _key.ALGORITHM_NAME,
                     kid = kId,
                     nonce,
                     url,
@@ -62,7 +62,7 @@ namespace LetsEncrypt.Core.Jws
 
             var signature = $"{protectedHeaderEncoded}.{entityEncoded}";
             var signatureBytes = Encoding.UTF8.GetBytes(signature);
-            var signedSignatureBytes = _rsaKeyPair.SignData(signatureBytes);
+            var signedSignatureBytes = _key.SignData(signatureBytes);
             var signedSignatureEncoded = JwsConvert.ToBase64String(signedSignatureBytes);
 
             return new JwsData
