@@ -39,8 +39,6 @@ namespace LetsEncrypt.Core
 
         protected async Task<T> GetAsync<T>(Uri uri) where T : BaseEntity, new()
         {
-            await InitAsync();
-
             using (var response = await Http.GetAsync(uri))
             {
                 return await ProcessResponseAsync<T>(response);
