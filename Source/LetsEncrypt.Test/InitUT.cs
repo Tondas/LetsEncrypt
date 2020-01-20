@@ -13,23 +13,17 @@ namespace LetsEncrypt.Test
         [Test]
         public async Task Test()
         {
-            // Create client alias core object
-            var acmeClient = new AcmeClient();
-
-            // Specify which environment you want to use
-            await acmeClient.InitAsync(EnviromentUri);
-
-            // Generate new RSA key pair or use existing
-            acmeClient.GenerateKeyPair();
+            // Create client alias core object + specify which environment you want to use
+            var acmeClient = new AcmeClient(EnviromentUri);
 
             // Create new Account
-            var account = await acmeClient.NewAccountAsync(ContactEmail);
+            await acmeClient.CreateNewAccountAsync(ContactEmail);
 
             // Create new Order
-            var order = await acmeClient.NewOrderAsync(account, new List<string> { "suppo.biz" });
+            var order = await acmeClient.NewOrderAsync(new List<string> { "suppo.biz" });
 
             // Create DNS challenge (DNS is required for wildcard certificate)
-            var challenges = await acmeClient.GetDnsChallenges(account, order);
+            var challenges = await acmeClient.GetDnsChallenges(order);
 
             // Creation of all DNS entries
             foreach (var challenge in challenges)
@@ -46,10 +40,10 @@ namespace LetsEncrypt.Test
             // Validation of all DNS entries
             foreach (var challenge in challenges)
             {
-                await acmeClient.ValidateChallengeAsync(account, challenge);
+                await acmeClient.ValidateChallengeAsync(challenge);
 
                 // Verify status of challenge
-                var freshChallenge = await acmeClient.GetChallengeAsync(account, challenge);
+                var freshChallenge = await acmeClient.GetChallengeAsync(challenge);
                 if (freshChallenge.Status == ChallengeStatus.Invalid)
                 {
                     throw new Exception("Something is wrong with your DNS TXT record(s)!");
@@ -57,7 +51,7 @@ namespace LetsEncrypt.Test
             }
 
             // Generate certificate
-            var certificate = await acmeClient.GenerateCertificateAsync(account, order, "Suppo.biz");
+            var certificate = await acmeClient.GenerateCertificateAsync(order, "Suppo.biz");
 
             // Save files locally
             var password = "SuperSecretPassword:D";

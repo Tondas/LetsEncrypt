@@ -17,9 +17,6 @@ namespace LetsEncrypt.Core.Entities
         [JsonProperty("termsOfServiceAgreed")]
         public bool? TermsOfServiceAgreed { get; set; }
 
-        //[JsonProperty("orders")]
-        //public Uri Orders { get; set; }
-
         [JsonProperty("initialIp")]
         public string InitialIp { get; set; }
 

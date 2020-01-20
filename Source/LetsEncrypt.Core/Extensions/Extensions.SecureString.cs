@@ -6,7 +6,7 @@ namespace LetsEncrypt.Core.Extensions
 {
     public static partial class Extensions
     {
-        public static string ToString2(this SecureString value)
+        public static string ToStandardString(this SecureString value)
         {
             IntPtr valuePtr = IntPtr.Zero;
             try

@@ -12,12 +12,12 @@ namespace LetsEncrypt.Core
 {
     public partial class AcmeClient
     {
-        public async Task<List<Challenge>> GetDnsChallenges(Account account, Order order)
+        public async Task<List<Challenge>> GetDnsChallenges(Order order)
         {
             var result = new List<Challenge>();
             foreach (var authorizationLocation in order.Authorizations)
             {
-                var authorization = await GetAuthorizationAsync(account.Location, authorizationLocation);
+                var authorization = await GetAuthorizationAsync(Account.Location, authorizationLocation);
                 var chalanges = authorization.Challenges.Where(i => i.Type == ChallengeType.Dns01);
 
                 foreach (var chalange in chalanges)
@@ -32,15 +32,15 @@ namespace LetsEncrypt.Core
             return result;
         }
 
-        public async Task<Challenge> GetChallengeAsync(Account account, Challenge challenge)
+        public async Task<Challenge> GetChallengeAsync(Challenge challenge)
         {
-            var signedData = _jws.Sign(null, account.Location, challenge.Url, Nonce);
+            var signedData = _jws.Sign(null, Account.Location, challenge.Url, Nonce);
             return await PostAsync<Challenge>(challenge.Url, signedData);
         }
 
-        public async Task ValidateChallengeAsync(Account account, Challenge challenge)
+        public async Task ValidateChallengeAsync(Challenge challenge)
         {
-            var signedData = _jws.Sign(new { }, account.Location, challenge.Url, Nonce);
+            var signedData = _jws.Sign(new { }, Account.Location, challenge.Url, Nonce);
             challenge = await PostAsync<Challenge>(challenge.Url, signedData);
         }
 

@@ -10,10 +10,10 @@ namespace LetsEncrypt.Core
     {
         // Public Methods
 
-        public async Task<Certificate> GenerateCertificateAsync(Account account, Order order, string certificateCommonName)
+        public async Task<Certificate> GenerateCertificateAsync(Order order, string certificateCommonName)
         {
             // Load fresh order
-            order = await GetOrderAsync(account, order.Location);
+            order = await GetOrderAsync(order.Location);
 
             // Verify Status
             if (order.Status != OrderStatus.Ready &&
@@ -29,7 +29,7 @@ namespace LetsEncrypt.Core
             byte[] request = cert.CreateSigningRequest(certificateCommonName, order.Identifiers.Select(i => i.Value).ToList());
 
             // Send certificate to CA
-            order = await Finalize(account.Location, order, request);
+            order = await Finalize(Account.Location, order, request);
 
             if (order.Status != OrderStatus.Valid)
             {
@@ -37,7 +37,7 @@ namespace LetsEncrypt.Core
             }
 
             // Download signed certificate
-            var certificateChainPem = await Download(account.Location, order);
+            var certificateChainPem = await Download(Account.Location, order);
 
             cert.AddChain(certificateChainPem);
 

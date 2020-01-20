@@ -20,12 +20,10 @@ LetsEncrypt.ConsoleApp is C# implementation|usage of previous LetsEncrypt.Core l
 
 Add [LetsEncrypt.Core](https://TODO) as nuget package (or manual **.dll reference**) to your project.
 
-First step is to create client object. Then initialize enviroment ([staging](https://letsencrypt.org/docs/staging-environment/) or production ... use staging environment first to avoid [rate limits](https://letsencrypt.org/docs/rate-limits/)). And generate new or use existing comunication (private/public) key pair:
+First step is to create client object to specific environment ([staging](https://letsencrypt.org/docs/staging-environment/) or production ... use staging environment first to avoid [rate limits](https://letsencrypt.org/docs/rate-limits/)):
 
 ```cs
-var acmeClient = new AcmeClient();
-await acmeClient.InitAsync(ApiEnvironment.LetsEncryptV2Staging);
-acmeClient.GenerateKeyPair();
+var acmeClient = new AcmeClient(ApiEnvironment.LetsEncryptV2Staging);
 ```
 
 ... and let's start:
@@ -34,12 +32,12 @@ acmeClient.GenerateKeyPair();
 
 Create new account: 
 ```cs
-var account = await acmeClient.NewAccountAsync("your@email.com");
+await acmeClient.CreateNewAccountAsync("your@email.com");
 ```
 
 ### Order
 
-When you want to generate wildcard certificate, I recomend to specify these 2 identifiers: `your.domain.com` and  `*.your.domain.com` as follows:
+When you want to generate wildcard certificate, I recommend to specify these 2 identifiers: `your.domain.com` and  `*.your.domain.com` as follows:
 ```cs
 var order = await acmeClient.NewOrderAsync(account, new List<string> { "your.domain.com", "*.your.domain.com" });
 ```

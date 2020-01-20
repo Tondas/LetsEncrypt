@@ -11,67 +11,36 @@ namespace LetsEncrypt.Core
 {
     public class BaseAcmeClient
     {
+        #region Consts + Fields + Properties
+
         private const string RESPONCE_HEADER_KEY_NONCE = "Replay-Nonce";
         private const string MIME_TYPE_JOSE_JSON = "application/jose+json";
 
         private readonly static JsonSerializerSettings jsonSettings = JsonSettings.CreateSettings();
         private readonly static Lazy<HttpClient> _httpClient = new Lazy<HttpClient>(() => new HttpClient());
+
+        private readonly Uri _directoryUri;
+
         private HttpClient Http { get => _httpClient.Value; }
 
-        private Directory _directory { get; set; }
-        private string _nonce { get; set; }
+        protected Directory Directory { get; set; }
+        protected string Nonce { get; set; }
 
-        protected Directory Directory
-        {
-            get
-            {
-                if (_directory == null)
-                {
-                    throw new Exception("Client is not initialized correctly, please call method .InitAsync() first!");
-                }
-                return _directory;
-            }
-            set { _directory = value; }
-        }
-
-        protected string Nonce
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_nonce))
-                {
-                    throw new Exception("Client is not initialized correctly, please call method .InitAsync() first!");
-                }
-                return _nonce;
-            }
-            set { _nonce = value; }
-        }
+        #endregion Consts + Fields + Properties
 
         // Ctor
 
-        public BaseAcmeClient()
+        public BaseAcmeClient(Uri directoryUri)
         {
-        }
-
-        // Public Methods
-
-        public async Task InitAsync(Uri directoryUri)
-        {
-            if (_directory == null)
-            {
-                _directory = await GetAsync<Directory>(directoryUri);
-            }
-
-            if (_nonce == null)
-            {
-                _nonce = await GetNonceAsync();
-            }
+            _directoryUri = directoryUri;
         }
 
         // Protected Methods
 
         protected async Task<T> GetAsync<T>(Uri uri) where T : BaseEntity, new()
         {
+            await InitAsync();
+
             using (var response = await Http.GetAsync(uri))
             {
                 return await ProcessResponseAsync<T>(response);
@@ -80,6 +49,8 @@ namespace LetsEncrypt.Core
 
         protected async Task<T> PostAsync<T>(Uri uri, object data) where T : BaseEntity, new()
         {
+            await InitAsync();
+
             var dataJson = JsonConvert.SerializeObject(data, Formatting.None, jsonSettings);
             var content = new StringContent(dataJson, Encoding.UTF8, MIME_TYPE_JOSE_JSON);
 
@@ -91,6 +62,27 @@ namespace LetsEncrypt.Core
         }
 
         // Private Methods
+
+        private async Task InitAsync()
+        {
+            if (Directory == null)
+            {
+                Directory = await GetDirectoryAsync();
+            }
+
+            if (Nonce == null)
+            {
+                Nonce = await GetNonceAsync();
+            }
+        }
+
+        private async Task<Directory> GetDirectoryAsync()
+        {
+            using (var response = await Http.GetAsync(_directoryUri))
+            {
+                return await ProcessResponseAsync<Directory>(response);
+            }
+        }
 
         private async Task<string> GetNonceAsync()
         {

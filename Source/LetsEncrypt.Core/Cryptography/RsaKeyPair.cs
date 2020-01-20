@@ -1,4 +1,5 @@
-﻿using LetsEncrypt.Core.Jws;
+﻿using LetsEncrypt.Core.Extensions;
+using LetsEncrypt.Core.Jws;
 using System;
 using System.Security.Cryptography;
 using System.Text;
@@ -9,6 +10,8 @@ namespace LetsEncrypt.Core.Cryptography
     {
         #region Consts + Fields + Properties
 
+        private const string RSA_PEM_STRING_PRIVATE = "RSA PRIVATE KEY";
+        private const string RSA_PEM_STRING_PUBLIC = "RSA PUBLIC KEY";
         public const int KEY_SIZE = 2048;
         public const string KEY_TYPE = "RSA";
         public const string THUMBPRINT_ALGORITHM_NAME = "SHA256";
@@ -26,6 +29,15 @@ namespace LetsEncrypt.Core.Cryptography
         {
             Private = privateKey;
             Public = publicKey;
+        }
+
+        public RsaKeyPair(string privateKeyPem, string publicKeyPem)
+        {
+            var privateKeyBytes = GetBytesFromPem(privateKeyPem, RSA_PEM_STRING_PRIVATE);
+            var publicKeyBytes = GetBytesFromPem(publicKeyPem, RSA_PEM_STRING_PUBLIC);
+
+            Private = privateKeyBytes.CreateRsaParametersFromKeyBytes();
+            Private = publicKeyBytes.CreateRsaParametersFromKeyBytes();
         }
 
         // Public Methods
@@ -91,15 +103,17 @@ namespace LetsEncrypt.Core.Cryptography
         public string ToPrivateKeyPem()
         {
             return string.Format(
-                "-----BEGIN RSA PRIVATE KEY-----\n{0}\n-----END RSA PRIVATE KEY-----",
-                Convert.ToBase64String(this.ToRSA().ExportRSAPrivateKey()));
+                "-----BEGIN {1}-----\n{0}\n-----END {1}-----",
+                Convert.ToBase64String(this.ToRSA().ExportRSAPrivateKey()),
+                RSA_PEM_STRING_PRIVATE);
         }
 
         public string ToPublicKeyPem()
         {
             return string.Format(
-                "-----BEGIN RSA PUBLIC KEY-----\n{0}\n-----END RSA PUBLIC KEY-----",
-                Convert.ToBase64String(this.ToRSA().ExportRSAPublicKey()));
+                "-----BEGIN {1}-----\n{0}\n-----END {1}-----",
+                Convert.ToBase64String(this.ToRSA().ExportRSAPublicKey()),
+                RSA_PEM_STRING_PUBLIC);
         }
 
         // Private Methods
@@ -112,6 +126,24 @@ namespace LetsEncrypt.Core.Cryptography
                 Exponent = JwsConvert.ToBase64String(Public.Exponent),
                 Modulus = JwsConvert.ToBase64String(Public.Modulus)
             };
+        }
+
+        private byte[] GetBytesFromPem(string pem, string headerFooterKey)
+        {
+            var header = $"-----BEGIN {headerFooterKey}-----";
+            var footer = $"-----END {headerFooterKey}-----";
+
+            var start = pem.IndexOf(header, StringComparison.Ordinal);
+            if (start < 0)
+                return null;
+
+            start += header.Length;
+            var end = pem.IndexOf(footer, start, StringComparison.Ordinal) - start;
+
+            if (end < 0)
+                return null;
+
+            return Convert.FromBase64String(pem.Substring(start, end));
         }
 
         // Static Methods

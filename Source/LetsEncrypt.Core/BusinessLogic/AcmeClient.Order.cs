@@ -10,13 +10,13 @@ namespace LetsEncrypt.Core
     {
         // Public Methods
 
-        public async Task<Order> GetOrderAsync(Account account, Uri orderLocation)
+        public async Task<Order> GetOrderAsync(Uri orderLocation)
         {
-            var signedData = _jws.Sign(null, account.Location, orderLocation, Nonce);
+            var signedData = _jws.Sign(null, Account.Location, orderLocation, Nonce);
             return await PostAsync<Order>(orderLocation, signedData);
         }
 
-        public async Task<Order> NewOrderAsync(Account account, List<string> identifiers)
+        public async Task<Order> NewOrderAsync(List<string> identifiers)
         {
             var data = new Order
             {
@@ -25,7 +25,7 @@ namespace LetsEncrypt.Core
                     .ToArray()
             };
 
-            var signedData = _jws.Sign(data, account.Location, Directory.NewOrder, Nonce);
+            var signedData = _jws.Sign(data, Account.Location, Directory.NewOrder, Nonce);
             return await PostAsync<Order>(Directory.NewOrder, signedData);
         }
 
