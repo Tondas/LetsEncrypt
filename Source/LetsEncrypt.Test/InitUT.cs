@@ -64,5 +64,11 @@ namespace LetsEncrypt.Test
 
             Assert.Pass();
         }
+
+        [Test]
+        public async Task DummyUT()
+        {
+            Assert.Pass();
+        }
     }
 }

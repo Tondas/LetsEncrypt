@@ -10,7 +10,7 @@ namespace LetsEncrypt.Core.Extensions
         public static IServiceCollection AddAllApplicationServices(this IServiceCollection services)
         {
             services.AddSingleton<ILogger, LocalFileLogger>(); // ConsoleLogger
-            services.AddSingleton(typeof(LocalFileHandler));
+            services.AddSingleton(typeof(LocalStorage));
 
             return services;
         }

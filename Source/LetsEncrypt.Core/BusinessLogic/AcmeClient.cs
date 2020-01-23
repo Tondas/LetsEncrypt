@@ -1,5 +1,6 @@
 ﻿using LetsEncrypt.Core.Cryptography;
 using LetsEncrypt.Core.Entities;
+using LetsEncrypt.Core.IO;
 using LetsEncrypt.Core.Json;
 using LetsEncrypt.Core.Jws;
 using Newtonsoft.Json;
@@ -12,6 +13,8 @@ namespace LetsEncrypt.Core
         #region Fields + Properties
 
         private readonly JsonSerializerSettings _jsonSettings = JsonSettings.CreateSettings();
+        private readonly LocalStorage _localStorage = new LocalStorage();
+
         private JwsSigner _jws;
         private RsaKeyPair Key { get; set; }
         private Account Account { get; set; }

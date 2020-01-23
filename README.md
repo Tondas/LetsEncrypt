@@ -39,14 +39,14 @@ await acmeClient.CreateNewAccountAsync("your@email.com");
 
 When you want to generate wildcard certificate, I recommend to specify these 2 identifiers: `your.domain.com` and  `*.your.domain.com` as follows:
 ```cs
-var order = await acmeClient.NewOrderAsync(account, new List<string> { "your.domain.com", "*.your.domain.com" });
+var order = await acmeClient.NewOrderAsync(new List<string> { "your.domain.com", "*.your.domain.com" });
 ```
 
 ### Authorization
 
 Wildcard certificates must by authorized by **DNS challenge** only. So go one by one and create DNS TXT record. 
 ```cs
-var challenges = await acmeClient.GetDnsChallenges(account, order);
+var challenges = await acmeClient.GetDnsChallenges(order);
 
 foreach (var challenge in challenges)
 {  
@@ -97,10 +97,10 @@ All challenges must be validated:
 foreach (var challenge in challenges)
 {
     // Do a validation
-    await acmeClient.ValidateChallengeAsync(account, challenge);
+    await acmeClient.ValidateChallengeAsync(challenge);
 
     // Verify status 
-    var freshChallenge = await acmeClient.GetChallengeAsync(account, challenge);
+    var freshChallenge = await acmeClient.GetChallengeAsync(challenge);
     if (freshChallenge.Status == ChallengeStatus.Invalid)
     {
         throw new Exception("Something is wrong with your DNS TXT record(s)!");
@@ -113,18 +113,18 @@ foreach (var challenge in challenges)
 Finally, generate certificate:
 
 ```cs
-var certificate = await acmeClient.GenerateCertificateAsync(account, order, "your.domain.com", "YourSuperSecretPasswordToCertificate");
+var certificate = await acmeClient.GenerateCertificateAsync(order, "your.domain.com", "YourSuperSecretPasswordToCertificate");
 
-// Generate byte[] of certificate in pfx format
+// Generate certificate in pfx format
 var pfx = certificate.GeneratePfx();
 
-// Generate byte[] of certificate in crt format
+// Generate certificate in crt format
 var crt = certificate.GenerateCrt();
 
-// Generate string of certificate in PEM format 
+// Generate certificate in PEM format 
 var crtPem = certificate.GenerateCrtPem();
 
-// Generate string of certificate priate key in PEM format 
+// Generate certificate private key in PEM format 
 var keyPem = certificate.GenerateKeyPem();
 ```
 

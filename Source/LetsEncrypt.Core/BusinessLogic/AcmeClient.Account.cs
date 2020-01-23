@@ -82,13 +82,20 @@ namespace LetsEncrypt.Core
 
         private async Task SaveAccountPersisted(AccountPersisted account)
         {
-            // TODO: Save
+            await _localStorage.PersistAccount(account.AccountContactEmail, account.AccountLocation);
+            await _localStorage.PersistPrivateKey(account.AccountContactEmail, account.PrivateKeyPem);
+            await _localStorage.PersistPublicKey(account.AccountContactEmail, account.PublicKeyPem);
         }
 
         private async Task<AccountPersisted> LoadAccountPersisted(string contactEmail)
         {
-            // TODO: Load
-            return new AccountPersisted();
+            var result = new AccountPersisted();
+            result.AccountContactEmail = contactEmail;
+            result.AccountLocation = await _localStorage.LoadAccount(contactEmail);
+            result.PrivateKeyPem = await _localStorage.LoadPrivateKey(contactEmail);
+            result.PublicKeyPem = await _localStorage.LoadPublicKey(contactEmail);
+
+            return result;
         }
     }
 }

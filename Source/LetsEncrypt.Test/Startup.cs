@@ -1,6 +1,6 @@
-﻿using LetsEncrypt.Core.Extensions;
-using LetsEncrypt.Core.Interfaces;
+﻿using LetsEncrypt.Core.Interfaces;
 using LetsEncrypt.Core.IO;
+using LetsEncrypt.Core.Loggers;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -14,7 +14,7 @@ namespace LetsEncrypt.Test
         protected static IServiceProvider ServiceProvider => _serviceProvider.Value;
 
         protected static ILogger Logger => ServiceProvider.GetRequiredService<ILogger>();
-        protected static LocalFileHandler LocalFileHandler => ServiceProvider.GetRequiredService<LocalFileHandler>();
+        protected static LocalStorage LocalFileHandler => ServiceProvider.GetRequiredService<LocalStorage>();
 
         #endregion Fields + Properties
 
@@ -23,7 +23,9 @@ namespace LetsEncrypt.Test
         private static IServiceProvider InitDependencyInjection()
         {
             var services = new ServiceCollection();
-            services.AddAllApplicationServices();
+            services.AddSingleton<ILogger, LocalFileLogger>(); // ConsoleLogger
+            services.AddSingleton(typeof(LocalStorage));
+
             return services.BuildServiceProvider();
         }
     }
