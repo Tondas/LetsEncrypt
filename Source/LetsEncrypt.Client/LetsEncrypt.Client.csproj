@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageId>LetsEncrypt.Client</PackageId>
+    <Authors>LetsEncrypt.Client</Authors>
+    <Company>LetsEncrypt.Client</Company>
+    <Product>LetsEncrypt.Client</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+
+</Project>

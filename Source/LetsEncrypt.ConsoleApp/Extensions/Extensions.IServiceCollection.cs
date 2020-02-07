@@ -1,9 +1,9 @@
-﻿using LetsEncrypt.Core.Interfaces;
-using LetsEncrypt.Core.IO;
-using LetsEncrypt.Core.Loggers;
+﻿using LetsEncrypt.Client.Interfaces;
+using LetsEncrypt.Client.IO;
+using LetsEncrypt.Client.Loggers;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LetsEncrypt.Core.Extensions
+namespace LetsEncrypt.Client.Extensions
 {
     public static partial class Extensions
     {

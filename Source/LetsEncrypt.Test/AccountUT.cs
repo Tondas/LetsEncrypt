@@ -1,5 +1,5 @@
-//using LetsEncrypt.Core;
-//using LetsEncrypt.Core.Entities;
+//using LetsEncrypt.Client;
+//using LetsEncrypt.Client.Entities;
 //using NUnit.Framework;
 //using System.Threading.Tasks;
 

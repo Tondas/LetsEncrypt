@@ -1,4 +1,4 @@
-using LetsEncrypt.Core.Entities;
+using LetsEncrypt.Client.Entities;
 using System;
 
 namespace LetsEncrypt.Test
@@ -6,6 +6,6 @@ namespace LetsEncrypt.Test
     public class BaseUT : Startup
     {
         protected string ContactEmail = "au@turingion.com";
-        protected Uri EnviromentUri = ApiEnvironment.LetsEncryptV2Staging;
+        protected Uri EnviromentUri = ApiEnvironment.LetsEncryptV2;
     }
 }

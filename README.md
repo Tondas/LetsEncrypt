@@ -1,24 +1,24 @@
 # Let's Encrypt C# library
 
 Solution consist of 2 projects:
-* **LetsEncrypt.Core** (.Net Standard Library - available as [nuget package](https://TODO))
+* **LetsEncrypt.Client** (.Net Standard Library - available as [nuget package](https://TODO))
 * **LetsEncrypt.ConsoleApp** (.Net Core Console application)
 
-#### LetsEncrypt.Core
+#### LetsEncrypt.Client
 
-LetsEncrypt.Core is simple and straightforward C# implementation of [ACME](https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment) client for [Let's Encrypt](https://letsencrypt.org/) certificates. Library is based on **.NET Standard 2.1+**.
+LetsEncrypt.Client is simple and straightforward C# implementation of [ACME](https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment) client for [Let's Encrypt](https://letsencrypt.org/) certificates. Library is based on **.NET Standard 2.1+**.
 It uses Let's Encrypt **v2 API** and this library is primary oriented for generation of **wildcard** certificates as .pfx. 
 
 #### LetsEncrypt.ConsoleApp
 
-LetsEncrypt.ConsoleApp is C# implementation|usage of previous LetsEncrypt.Core library based on **.NET Core 3.0**. It is simple **console application** which generates Let's Encrypt certificates. 
+LetsEncrypt.ConsoleApp is C# implementation|usage of previous LetsEncrypt.Client library based on **.NET Core 3.0**. It is simple **console application** which generates Let's Encrypt certificates. 
 
 
-## LetsEncrypt.Core
+## LetsEncrypt.Client
 
 ### Usage
 
-Add [LetsEncrypt.Core](https://TODO) as nuget package (or manual **.dll reference**) to your project.
+Add [LetsEncrypt.Client](https://TODO) as nuget package (or manual **.dll reference**) to your project.
 
 First step is to create client object to specific environment ([staging](https://letsencrypt.org/docs/staging-environment/) or production ... use staging environment first to avoid [rate limits](https://letsencrypt.org/docs/rate-limits/)):
 
@@ -32,21 +32,21 @@ var acmeClient = new AcmeClient(ApiEnvironment.LetsEncryptV2Staging);
 
 Create new account: 
 ```cs
-await acmeClient.CreateNewAccountAsync("your@email.com");
+var account = await acmeClient.CreateNewAccountAsync("your@email.com");
 ```
 
 ### Order
 
-When you want to generate wildcard certificate, I recommend to specify these 2 identifiers: `your.domain.com` and  `*.your.domain.com` as follows:
+When you want to generate wildcard certificate, I recommend to specify these 2 identifiers: `domain.com` and  `*.domain.com` as follows:
 ```cs
-var order = await acmeClient.NewOrderAsync(new List<string> { "your.domain.com", "*.your.domain.com" });
+var order = await acmeClient.NewOrderAsync(account, new List<string> { "domain.com", "*.domain.com" });
 ```
 
 ### Authorization
 
 Wildcard certificates must by authorized by **DNS challenge** only. So go one by one and create DNS TXT record. 
 ```cs
-var challenges = await acmeClient.GetDnsChallenges(order);
+var challenges = await acmeClient.GetDnsChallenges(account, order);
 
 foreach (var challenge in challenges)
 {  
@@ -97,10 +97,10 @@ All challenges must be validated:
 foreach (var challenge in challenges)
 {
     // Do a validation
-    await acmeClient.ValidateChallengeAsync(challenge);
+    await acmeClient.ValidateChallengeAsync(account, challenge);
 
     // Verify status 
-    var freshChallenge = await acmeClient.GetChallengeAsync(challenge);
+    var freshChallenge = await acmeClient.GetChallengeAsync(account, challenge);
     if (freshChallenge.Status == ChallengeStatus.Invalid)
     {
         throw new Exception("Something is wrong with your DNS TXT record(s)!");
@@ -113,7 +113,7 @@ foreach (var challenge in challenges)
 Finally, generate certificate:
 
 ```cs
-var certificate = await acmeClient.GenerateCertificateAsync(order, "your.domain.com", "YourSuperSecretPasswordToCertificate");
+var certificate = await acmeClient.GenerateCertificateAsync(account, order, "domain.com", "YourSuperSecretPasswordOfCertificate");
 
 // Generate certificate in pfx format
 var pfx = certificate.GeneratePfx();

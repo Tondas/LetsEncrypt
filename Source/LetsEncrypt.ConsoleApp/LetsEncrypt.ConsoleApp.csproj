@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LetsEncrypt.Core\LetsEncrypt.Core.csproj" />
+    <ProjectReference Include="..\LetsEncrypt.Client\LetsEncrypt.Client.csproj" />
   </ItemGroup>
 
 </Project>
