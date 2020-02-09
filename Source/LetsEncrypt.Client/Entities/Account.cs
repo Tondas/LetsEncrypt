@@ -14,8 +14,8 @@ namespace LetsEncrypt.Client.Entities
         [JsonProperty("contact")]
         public List<string> Contact { get; set; }
 
-        //[JsonProperty("termsOfServiceAgreed")]
-        //public bool? TermsOfServiceAgreed { get; set; }
+        [JsonProperty("termsOfServiceAgreed")]
+        public bool? TermsOfServiceAgreed { get; set; }
 
         [JsonProperty("initialIp")]
         public string InitialIp { get; set; }

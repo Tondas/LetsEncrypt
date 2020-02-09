@@ -23,6 +23,7 @@ namespace LetsEncrypt.Client.Entities
 
         public Account()
         {
+            TermsOfServiceAgreed = true;
         }
 
         public Account(RsaKeyPair key)
@@ -40,13 +41,25 @@ namespace LetsEncrypt.Client.Entities
 
         // Public Methods
 
-        public async Task Save()
+        public async Task SaveAsync()
         {
-            var contactEmail = Contact.FirstOrDefault();
+            var contactEmail = Contact.FirstOrDefault().Replace(Constants.PREFIX_MAILTO, string.Empty);
 
             await _localStorage.PersistAccount(contactEmail, this.Location.AbsoluteUri);
             await _localStorage.PersistPrivateKey(contactEmail, Key.ToPrivateKeyPem());
-            await _localStorage.PersistPublicKey(contactEmail, Key.ToPublicKeyPem());
+            //await _localStorage.PersistPublicKey(contactEmail, Key.ToPublicKeyPem());
+        }
+
+        public void FillBy(Account account)
+        {
+            this.UnknownContent = account.UnknownContent;
+            this.Location = account.Location;
+            this.Error = account.Error;
+            this.Status = account.Status;
+            this.Contact = account.Contact;
+            this.TermsOfServiceAgreed = account.TermsOfServiceAgreed;
+            this.InitialIp = account.InitialIp;
+            this.CreatedAt = account.CreatedAt;
         }
 
         // Static Methods
@@ -61,13 +74,13 @@ namespace LetsEncrypt.Client.Entities
             };
         }
 
-        public static async Task<Account> Load(string contactEmail)
+        public static async Task<Account> LoadAsync(string contactEmail)
         {
             var location = await _localStorage.LoadAccount(contactEmail);
             var privateKeyPem = await _localStorage.LoadPrivateKey(contactEmail);
-            var publicKeyPem = await _localStorage.LoadPublicKey(contactEmail);
+            //var publicKeyPem = await _localStorage.LoadPublicKey(contactEmail);
 
-            var key = new RsaKeyPair(privateKeyPem, publicKeyPem);
+            var key = new RsaKeyPair(privateKeyPem);
 
             return new Account(key, location);
         }

@@ -10,7 +10,12 @@ namespace LetsEncrypt.Client
 
         public async Task<Account> CreateNewAccountAsync(string contactEmail)
         {
-            return await NewAccountAsync(new List<string> { $"mailto:{contactEmail}" });
+            var account = Account.Create(new List<string> { $"{Constants.PREFIX_MAILTO}{contactEmail}" });
+
+            var returnAccount = await NewAccountAsync(account);
+            account.FillBy(returnAccount);
+
+            return account;
         }
 
         // Private Methods
@@ -42,10 +47,8 @@ namespace LetsEncrypt.Client
             return await PostAsync<Account>(account.Location, signedData);
         }
 
-        private async Task<Account> NewAccountAsync(List<string> contactEmails)
+        private async Task<Account> NewAccountAsync(Account account)
         {
-            var account = Account.Create(contactEmails);
-
             var directory = await GetDirectoryAsync();
             var nonce = await GetNonceAsync();
 

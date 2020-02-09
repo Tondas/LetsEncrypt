@@ -1,35 +1,42 @@
-//using LetsEncrypt.Client;
-//using LetsEncrypt.Client.Entities;
-//using NUnit.Framework;
-//using System.Threading.Tasks;
+using LetsEncrypt.Client;
+using LetsEncrypt.Client.Entities;
+using NUnit.Framework;
+using System.Threading.Tasks;
 
-//namespace LetsEncrypt.Test
-//{
-//    public class AccountUT : BaseUT
-//    {
-//        [Test]
-//        public async Task UseExisingUT()
-//        {
-//            var acmeClient = new AcmeClient(EnviromentUri);
-//            var account = await acmeClient.NewAccountAsync(ContactEmail);
+namespace LetsEncrypt.Test
+{
+    public class AccountUT : BaseUT
+    {
+        [Test, Order(1)]
+        public void Dummy()
+        {
+            Assert.Pass();
+        }
 
-//            // TODO: persist key + account location in text format
+        [Test, Order(2)]
+        public async Task AccountCreation()
+        {
+            var acmeClient = new AcmeClient(EnviromentUri);
+            var account = await acmeClient.CreateNewAccountAsync(ContactEmail);
 
-//            Assert.IsNotNull(freshAccount);
-//        }
+            Assert.IsNotNull(account);
+        }
 
-//        [Test]
-//        public async Task DeactivateUT()
-//        {
-//            var acmeClient = new AcmeClient(EnviromentUri);
-//            var account = await acmeClient.NewAccountAsync(ContactEmail);
+        [Test, Order(3)]
+        public async Task AccountPersistance()
+        {
+            var acmeClient = new AcmeClient(EnviromentUri);
+            var tempAccount = await acmeClient.CreateNewAccountAsync(ContactEmail);
 
-//            account = await acmeClient.DeactivateAccountAsync(account);
+            await tempAccount.SaveAsync();
 
-//            Assert.IsTrue(account.Status == AccountStatus.Deactivated);
-//        }
-//    }
-//}
+            // Load Stored Account
+            var account = await Account.LoadAsync(ContactEmail);
+
+            Assert.IsNotNull(account);
+        }
+    }
+}
 
 /*
 Then this newly created account can be persisted locally into `\Store` directory inside root of your application:

@@ -31,13 +31,16 @@ namespace LetsEncrypt.Client.Cryptography
             Public = publicKey;
         }
 
-        public RsaKeyPair(string privateKeyPem, string publicKeyPem)
+        public RsaKeyPair(string privateKeyPem)
         {
             var privateKeyBytes = GetBytesFromPem(privateKeyPem, RSA_PEM_STRING_PRIVATE);
-            var publicKeyBytes = GetBytesFromPem(publicKeyPem, RSA_PEM_STRING_PUBLIC);
 
             Private = privateKeyBytes.CreateRsaParametersFromKeyBytes();
-            Private = publicKeyBytes.CreateRsaParametersFromKeyBytes();
+            Public = new RSAParameters()
+            {
+                Exponent = Private.Exponent,
+                Modulus = Private.Modulus
+            };
         }
 
         // Public Methods
