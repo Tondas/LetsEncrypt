@@ -1,7 +1,7 @@
 # Let's Encrypt C# library
 
 Solution consist of 2 projects:
-* **LetsEncrypt.Client** (.Net Standard Library - available as [nuget package](https://TODO))
+* **LetsEncrypt.Client** (.Net Standard Library - available as [nuget package](https://www.nuget.org/packages/LetsEncrypt.Client/1.0.0))
 * **LetsEncrypt.ConsoleApp** (.Net Core Console application)
 
 #### LetsEncrypt.Client
@@ -18,7 +18,7 @@ LetsEncrypt.ConsoleApp is C# implementation|usage of previous LetsEncrypt.Client
 
 ### Usage
 
-Add [LetsEncrypt.Client](https://TODO) as nuget package (or manual **.dll reference**) to your project.
+Add [LetsEncrypt.Client](https://www.nuget.org/packages/LetsEncrypt.Client/1.0.0) as nuget package (or manual **.dll reference**) to your project.
 
 First step is to create client object to specific environment ([staging](https://letsencrypt.org/docs/staging-environment/) or production ... use staging environment first to avoid [rate limits](https://letsencrypt.org/docs/rate-limits/)):
 
