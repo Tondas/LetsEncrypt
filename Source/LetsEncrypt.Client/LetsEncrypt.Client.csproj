@@ -3,13 +3,38 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>LetsEncrypt.Client</PackageId>
-    <Authors>LetsEncrypt.Client</Authors>
-    <Company>LetsEncrypt.Client</Company>
+    <Authors>Anton Urbanik</Authors>
+    <Company></Company>
     <Product>LetsEncrypt.Client</Product>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>LetsEncrypt.Client.snk</AssemblyOriginatorKeyFile>
+    <Description>LetsEncrypt.Client is simple and straightforward C# implementation of ACME client for Let's Encrypt certificates. Library is primary oriented for generation of wildcard certificates as .pfx.</Description>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Tondas/LetsEncrypt</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Tondas/LetsEncrypt</RepositoryUrl>
+    <PackageTags>letsencrypt, acme, certificate, wildcard</PackageTags>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>Logo-LockOnly.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\..\Other\Logo-LockOnly.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
