@@ -1,5 +1,8 @@
 # Let's Encrypt C# library
 
+[![NuGet](https://img.shields.io/nuget/dt/LetsEncrypt.Client.svg)](https://www.nuget.org/packages/LetsEncrypt.Client) 
+[![NuGet](https://img.shields.io/nuget/vpre/LetsEncrypt.Client.svg)](https://www.nuget.org/packages/LetsEncrypt.Client)
+
 Solution consist of 2 projects:
 * **LetsEncrypt.Client** (.Net Standard Library - available as [nuget package](https://www.nuget.org/packages/LetsEncrypt.Client/1.0.0))
 * **LetsEncrypt.ConsoleApp** (.Net Core Console application)
