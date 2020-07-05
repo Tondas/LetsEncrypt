@@ -22,6 +22,7 @@ namespace LetsEncrypt.Client
 
                 foreach (var chalange in chalanges)
                 {
+                    chalange.DnsKey = "_acme-challenge." + authorization.Identifier.Value.Replace("*.", string.Empty);
                     chalange.VerificationKey = GetChalangeKey(account, chalange.Token);
                     chalange.VerificationValue = GetChalangeDnsText(account, chalange.Token);
                 }

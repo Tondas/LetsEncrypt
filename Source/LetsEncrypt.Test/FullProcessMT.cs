@@ -9,8 +9,8 @@ namespace LetsEncrypt.Test
     public class FullProcessMT : BaseUT
 
     {
-        //[Test]
-        public async Task CreateAccount()
+        [Test]
+        public async Task Run()
         {
             // Create client alias core object + specify which environment you want to use
             var acmeClient = new AcmeClient(EnviromentUri);
@@ -53,13 +53,11 @@ namespace LetsEncrypt.Test
             var certificate = await acmeClient.GenerateCertificateAsync(account, order, "Suppo.biz");
 
             // Save files locally
-            var password = "tondastondasSuppo1+";
+            var password = "YourSuperSecretPassword";
             await LocalFileHandler.WriteAsync("Suppo.biz.pfx", certificate.GeneratePfx(password));
             await LocalFileHandler.WriteAsync("Suppo.biz.crt", certificate.GenerateCrt(password));
             await LocalFileHandler.WriteAsync("Suppo.biz.crt.pem", certificate.GenerateCrtPem(password));
             await LocalFileHandler.WriteAsync("Suppo.biz.key.pem", certificate.GenerateKeyPem());
-
-            //await acmeClient.RevokeCertificateAsync(certificate);
 
             Assert.Pass();
         }

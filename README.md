@@ -14,7 +14,7 @@ It uses Let's Encrypt **v2 API** and this library is primary oriented for genera
 
 #### LetsEncrypt.ConsoleApp
 
-LetsEncrypt.ConsoleApp is C# implementation|usage of previous LetsEncrypt.Client library based on **.NET Core 3.0**. It is simple **console application** which generates Let's Encrypt certificates. 
+LetsEncrypt.ConsoleApp is C# implementation|usage of previous LetsEncrypt.Client library based on **.NET Core 3.1**. It is simple **console application** which generates Let's Encrypt certificates. 
 
 
 ## LetsEncrypt.Client
@@ -136,5 +136,21 @@ var keyPem = certificate.GenerateKeyPem();
 ---
 
 ## LetsEncrypt.ConsoleApp
-...
+
+Add your correct values to **.config** file :
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+    <appSettings>
+        <add key="ContactEmail" value="your@email.com" />
+        <add key="Domains" value="domain.com, *.domain.com" />
+        <add key="CertificateFileName" value="Domain.com" />
+        <add key="CertificatePassword" value="YourSuperSecretPassword" />
+    </appSettings>
+</configuration>
+```
+and run console application **LetsEncrypt.ConsoleApp.exe**
+
+**Enjoy!**
 

@@ -24,6 +24,9 @@ namespace LetsEncrypt.Client.Entities
         //
 
         [JsonIgnore]
+        public string DnsKey { get; set; }
+
+        [JsonIgnore]
         public string VerificationKey { get; set; }
 
         [JsonIgnore]
