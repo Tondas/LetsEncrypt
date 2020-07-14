@@ -116,16 +116,16 @@ foreach (var challenge in challenges)
 Finally, generate certificate:
 
 ```cs
-var certificate = await acmeClient.GenerateCertificateAsync(account, order, "domain.com", "YourSuperSecretPasswordOfCertificate");
+var certificate = await acmeClient.GenerateCertificateAsync(account, order, "domain.com");
 
 // Generate certificate in pfx format
-var pfx = certificate.GeneratePfx();
+var pfx = certificate.GeneratePfx("YourSuperSecretPasswordOfCertificate");
 
 // Generate certificate in crt format
-var crt = certificate.GenerateCrt();
+var crt = certificate.GenerateCrt("YourSuperSecretPasswordOfCertificate");
 
 // Generate certificate in PEM format 
-var crtPem = certificate.GenerateCrtPem();
+var crtPem = certificate.GenerateCrtPem("YourSuperSecretPasswordOfCertificate");
 
 // Generate certificate private key in PEM format 
 var keyPem = certificate.GenerateKeyPem();
