@@ -2,13 +2,17 @@ using LetsEncrypt.Client;
 using LetsEncrypt.Client.Entities;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LetsEncrypt.Test
 {
     public class FullProcessMT : BaseUT
-
     {
+        protected string ContactEmail = "au@turingion.com";
+        protected Uri EnviromentUri = ApiEnvironment.LetsEncryptV2Staging;
+        protected List<string> Identifiers = new List<string> { "turingion.com", "*.turingion.com" };
+
         [Test]
         public async Task Run()
         {
@@ -50,14 +54,14 @@ namespace LetsEncrypt.Test
             }
 
             // Generate certificate
-            var certificate = await acmeClient.GenerateCertificateAsync(account, order, "Suppo.biz");
+            var certificate = await acmeClient.GenerateCertificateAsync(account, order, "Turingion.com");
 
             // Save files locally
             var password = "YourSuperSecretPassword";
-            await LocalFileHandler.WriteAsync("Suppo.biz.pfx", certificate.GeneratePfx(password));
-            await LocalFileHandler.WriteAsync("Suppo.biz.crt", certificate.GenerateCrt(password));
-            await LocalFileHandler.WriteAsync("Suppo.biz.crt.pem", certificate.GenerateCrtPem(password));
-            await LocalFileHandler.WriteAsync("Suppo.biz.key.pem", certificate.GenerateKeyPem());
+            await LocalFileHandler.WriteAsync("Turingion.com.pfx", certificate.GeneratePfx(password));
+            await LocalFileHandler.WriteAsync("Turingion.com.crt", certificate.GenerateCrt(password));
+            await LocalFileHandler.WriteAsync("Turingion.com.crt.pem", certificate.GenerateCrtPem(password));
+            await LocalFileHandler.WriteAsync("Turingion.com.key.pem", certificate.GenerateKeyPem());
 
             Assert.Pass();
         }

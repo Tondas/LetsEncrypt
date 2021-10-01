@@ -33,6 +33,7 @@ namespace LetsEncrypt.Client.Cryptography
 
         public static byte[] Generate(RSA rsa, CertificateChain certificateChain, string password, X509ContentType certificateType)
         {
+            /*
             var certificate = new X509Certificate2(certificateChain.CertificateBytes);
             var issuer = new X509Certificate2(certificateChain.IssuerBytes);
 
@@ -41,6 +42,23 @@ namespace LetsEncrypt.Client.Cryptography
             var collection = new X509Certificate2Collection();
             collection.Add(issuer);
             collection.Add(certificate);
+            */
+
+            //
+            var collection = new X509Certificate2Collection();
+
+            // Reverse
+            for (int i = certificateChain.Certificates.Count - 1; i >= 0; i--)
+            {
+                var tempCert = certificateChain.Certificates[i];
+                var cert = new X509Certificate2(tempCert.Bytes);
+                if (i == 0)
+                {
+                    cert = cert.CopyWithPrivateKey(rsa);
+                }
+
+                collection.Add(cert);
+            }
 
             return collection.Export(certificateType, password);
         }
