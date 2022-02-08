@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <PackageId>LetsEncrypt.Client</PackageId>
+	  <TargetFramework>net6.0</TargetFramework>
+	  <Nullable>enable</Nullable>    <PackageId>LetsEncrypt.Client</PackageId>
     <Authors>Anton Urbanik</Authors>
     <Company></Company>
     <Product>LetsEncrypt.Client</Product>
@@ -23,7 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
