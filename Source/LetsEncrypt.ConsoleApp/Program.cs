@@ -89,44 +89,44 @@ namespace LetsEncrypt.ConsoleApp
             Console.WriteLine("Step 3 - Verification of DNS TXT record(s)");
 
             // Validation of all DNS entries
-            var failedCount = 3;
-            var valid = false;
-            while (!valid)
+            foreach (var challenge in challenges)
             {
-                try
-                {
-                    foreach (var challenge in challenges)
-                    {
-                        await acmeClient.ValidateChallengeAsync(account, challenge);
+                bool success = false;
 
-                        // Verify status of challenge
-                        var freshChallenge = await acmeClient.GetChallengeAsync(account, challenge);
-                        if (freshChallenge.Status == ChallengeStatus.Invalid)
-                        {
-                            throw new Exception("Something is wrong with your DNS TXT record(s)!");
-                        }
+                // Validate challenge
+                await acmeClient.ValidateChallengeAsync(account, challenge);
+                await Task.Delay(5000);
+
+                // Verify status of challenge - 3 times with 5 seconds delay between each attempt
+                for (int attempt = 1; attempt <= 3; attempt++)
+                {
+                    var freshChallenge = await acmeClient.GetChallengeAsync(account, challenge);
+
+                    if (freshChallenge.Status == ChallengeStatus.Valid)
+                    {
+                        success = true;
+                        break;
                     }
 
-                    valid = true;
+                    if (attempt < 3)
+                    {
+                        // Wait before next attempt
+                        await Task.Delay(5000);
+                    }
                 }
-                catch (Exception ex)
+
+                if (!success)
                 {
-                    failedCount--;
-
-                    if (failedCount == 0)
-                    {
-                        throw new Exception("Validation of DNS TXT record(s) is failed!", ex);
-                    }
-
-                    Thread.Sleep(5000);
+                    throw new Exception(
+                        "DNS TXT record(s) verification failed after 3 attempts!"
+                    );
                 }
             }
 
             //
             Console.WriteLine("Step 3 - Done");
             Console.WriteLine("Step 4 - Certificate generation");
-
-            Thread.Sleep(5000);
+            Thread.Sleep(10000);
 
             // Generate certificate
             var certificate = await acmeClient.GenerateCertificateAsync(account, order, Settings.CertificateFileName);
